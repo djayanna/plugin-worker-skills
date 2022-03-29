@@ -20,9 +20,7 @@ export default class WorkerskillsPlugin extends FlexPlugin {
   async init(flex, manager) {
     this.registerReducers(manager);
 
-    // flex.WorkerSkills.Content.replace(<WorkerSkills key="custom-worker-skills" />);
-
-    flex.WorkerSkills.Content.add(<WorkerSkills key="custom-worker-skills" />, { sortOrder: 5 });
+    flex.WorkerSkills.Content.replace(<WorkerSkills key="custom-worker-skills" />);
   }
 
   /**
