@@ -1,0 +1,74 @@
+.input {
+    width: calc(100% - 10px);
+    height: 25px;
+    padding-right: 5px;
+    padding-left: 5px;
+}
+
+.inputWrapper {
+    padding: 15px 20px 0 15px;
+    margin-top: 10px;
+    height: 40px;
+    border-top: 1px solid #CCC;
+}
+
+.bulkWrapper{
+    border-bottom: 1px solid #CCC;
+    margin-top: 25px;
+}
+
+.bulkTitle  {
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-left: 15px;
+    font-size: 11px;
+}
+
+.bulkResultDescription {
+    margin: 0 0 5px 15px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.bulkList {
+    margin: 15px;
+    padding: 0 10px; 
+    height: 100px;
+    float:left;
+    border-top: 1px solid #CCC;
+    border-bottom: 1px solid #CCC;
+    width: calc(100% - 50px);
+    overflow-y: auto;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.bulkItem {
+    border-bottom: 1px dotted #CCC;
+    padding: 5px 0 5px 0;
+}
+
+.bulkItem:last-of-type {
+    border:0;
+}
+
+.bulkButtons{
+    width: calc(100% - 15px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 15px 15px 0;
+}
+
+.bulkButtonDescription {
+    margin-right: 10px;
+}
+
+.label {
+    padding: 5px !important;
+}
+
+.bold {
+    font-weight: bold;
+}
