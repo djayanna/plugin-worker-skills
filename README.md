@@ -70,3 +70,6 @@ Edit `.env` and set the `FLEX_APP_FUNCTIONS_BASE` variable to your Twilio Functi
 
 Run `twilio flex:plugins --help` to see all the commands we currently support. For further details on Flex Plugins refer to our documentation on the [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins/cli) page.
 
+<video width="320" height="240" controls>
+  <source src="/screen_captures/bulk-skills.mp4" type="video/mp4">
+</video>

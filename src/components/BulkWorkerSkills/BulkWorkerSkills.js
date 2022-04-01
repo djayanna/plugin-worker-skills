@@ -87,17 +87,18 @@ class BulkWorkerSkills extends React.Component {
     }, []);
 
     const { routing, disabled_skills } = workerAttributes;
-    const workerSkills = {
-      routing,
-      disabled_skills,
-      skillsUpdatedBy,
-      skillsUpdatedTimestamp,
-    };
-
+    
     const workerSids = this.state.selectedWorkers;
     const skillsUpdatedBy =
       Flex.Manager.getInstance().store.getState().flex.session.identity;
     const skillsUpdatedTimestamp = new Date().toISOString();
+
+    const workerSkills = {
+        routing,
+        disabled_skills,
+        skillsUpdatedBy,
+        skillsUpdatedTimestamp,
+      };
 
     await Helpers.request("workers-bulk-skills-update", {
       workerSids: JSON.stringify(workerSids),

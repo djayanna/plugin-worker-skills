@@ -26,7 +26,7 @@ exports.handler = TokenValidator(async (context, event, callback) =>  {
         ...updateAttr,
       };
 
-      const updateWorker = await client.taskrouter
+      await client.taskrouter
         .workspaces(context.TWILIO_WORKSPACE_SID)
         .workers(workerSid)
         .update({ attributes: JSON.stringify(workersAttributes) });
