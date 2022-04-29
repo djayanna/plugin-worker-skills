@@ -1,7 +1,7 @@
 const TokenValidator = require('twilio-flex-token-validator').functionValidator;
 
 exports.handler = TokenValidator(async (context, event, callback) =>  {
-  const client = context.getTwilioClient();
+  
   const response = new Twilio.Response();
   response.appendHeader('Access-Control-Allow-Origin', '*');
   response.appendHeader('Access-Control-Allow-Methods', 'OPTIONS, POST');
@@ -13,26 +13,49 @@ exports.handler = TokenValidator(async (context, event, callback) =>  {
     workerSids = JSON.parse(workerSids);
 
     console.log(updateAttr);
+
+    const updateWorker = async (workerSid, retryCount = 0, lastError = null) => {
+      if (retryCount > 2) throw new Error(lastError);
+      try {
+        const client = context.getTwilioClient();
+        const worker = await client.taskrouter
+          .workspaces(context.TWILIO_WORKSPACE_SID)
+          .workers(workerSid)
+          .fetch();
+  
+        console.log(client._httpClient.lastResponse.headers);
+  
+        var etag = client._httpClient.lastResponse.headers["etag"]; 
+  
+        let workersAttributes = JSON.parse(worker.attributes);
+  
+        workersAttributes = {
+          ...workersAttributes,
+          ...updateAttr,
+        };
+  
+        var opts = { attributes: JSON.stringify(workersAttributes) }
+  
+        if(etag) {
+          var ifMatch = new String(etag).toString().replace(/['"]+/g, '');
+          opts["ifMatch"] = ifMatch;
+        }
+  
+        await client.taskrouter
+          .workspaces(context.TWILIO_WORKSPACE_SID)
+          .workers(workerSid)
+          .update(opts);
+
+        console.log('Updated', workerSid, 'attributes with', updatedAttributes);
+      
+      } catch (e) {
+        console.error(e);
+        return updateWorker(workerSid, retryCount + 1, e);
+      }
+    };
+
     await Promise.all( workerSids.map(async (workerSid) => {
-      const worker = await client.taskrouter
-        .workspaces(context.TWILIO_WORKSPACE_SID)
-        .workers(workerSid)
-        .fetch();
-
-      let workersAttributes = JSON.parse(worker.attributes);
-
-      workersAttributes = {
-        ...workersAttributes,
-        ...updateAttr,
-      };
-
-      await client.taskrouter
-        .workspaces(context.TWILIO_WORKSPACE_SID)
-        .workers(workerSid)
-        .update({ attributes: JSON.stringify(workersAttributes) });
-
-      console.log('Updated', workerSid, 'attributes with', updatedAttributes);
-    
+     await updateWorker(workerSid);
   }));
 
     response.appendHeader("Content-Type", "application/json");
@@ -40,8 +63,7 @@ exports.handler = TokenValidator(async (context, event, callback) =>  {
     return callback(null, response);
 
   } catch (error) {
-
-    console.error(error.message);
+    console.error(error.code);
     response.appendHeader("Content-Type", "plain/text");
     response.setBody(error.message);
     response.setStatusCode(500);
