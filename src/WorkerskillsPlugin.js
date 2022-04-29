@@ -1,8 +1,9 @@
 import React from 'react';
 import { VERSION } from '@twilio/flex-ui';
 import { FlexPlugin } from '@twilio/flex-plugin';
-import WorkerSkills from './components/WorkerSkills/WorkerSkills.Container';
 import BulkSkills from './components/BulkWorkerSkills/BulkWorkerSkills';
+import DisplayWorkerSkills from './components/DisplayWorkerSkills/DisplayWorkerSkills';
+import WorkerSkills from './components/WorkerSkills/WorkerSkills.Container';
 import reducers, { namespace } from "./states";
 
 const PLUGIN_NAME = 'WorkerskillsPlugin';
@@ -22,8 +23,18 @@ export default class WorkerskillsPlugin extends FlexPlugin {
   async init(flex, manager) {
     this.registerReducers(manager);
 
-    flex.WorkerSkills.Content.replace(<WorkerSkills key="custom-worker-skills" />);
-    flex.WorkerCanvas.Content.add(<BulkSkills key="bulk-skills" />);
+    if(!this.showEditableWorkerSkills(manager)) {
+      flex.WorkerSkills.Content.replace(<DisplayWorkerSkills key="skills" />);
+    } else {
+      flex.WorkerSkills.Content.replace(<WorkerSkills key="custom-worker-skills" />);
+      flex.WorkerCanvas.Content.add(<BulkSkills key="bulk-skills" />);
+    }
+  }
+
+  showEditableWorkerSkills(manager)
+  {
+      const { roles } = manager.user;
+      return roles.indexOf("supervisor") >= 0 || roles.indexOf("admin") >= 0;
   }
 
   /**
