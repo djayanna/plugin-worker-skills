@@ -29,6 +29,7 @@ class BulkWorkerSkills extends React.Component {
     search: "",
     showMessage: null,
     error: null,
+    showUpdateErrors: null,
   };
 
   componentDidMount() {
@@ -46,6 +47,7 @@ class BulkWorkerSkills extends React.Component {
             error: null,
             workers: items,
             showMessage: null,
+            showUpdateErrors: null,
           });
         });
 
@@ -75,55 +77,119 @@ class BulkWorkerSkills extends React.Component {
   updateWorkersAttributes = async () => {
     const { workerAttributes } = this.props;
 
-    this.setState({ showMessage: "Saving changes .." });
-
-    const workers = Object.keys(this.state.workers).reduce((pr, cur) => {
-      const worker = this.state.workers[cur];
-      if (this.state.selectedWorkers.includes(worker.worker_sid)) {
-        return [...pr, worker];
-      }
-
-      return pr;
-    }, []);
+    this.setState({ showMessage: "Saving changes ..", showUpdateErrors: null });
 
     const { routing, disabled_skills } = workerAttributes;
-    
+
     const workerSids = this.state.selectedWorkers;
     const skillsUpdatedBy =
       Flex.Manager.getInstance().store.getState().flex.session.identity;
     const skillsUpdatedTimestamp = new Date().toISOString();
 
     const workerSkills = {
-        routing,
-        disabled_skills,
-        skillsUpdatedBy,
-        skillsUpdatedTimestamp,
-      };
+      routing,
+      disabled_skills,
+      skillsUpdatedBy,
+      skillsUpdatedTimestamp,
+    };
 
-    await Helpers.request("workers-bulk-skills-update", {
-      workerSids: JSON.stringify(workerSids),
-      updatedAttributes: JSON.stringify(workerSkills),
-    });
-
-    this.setState({ showMessage: "Saved" });
-    setTimeout(
-      () => this.setState({ showMessage: null, selectedWorkers: [] }),
-      2000
+    var { updatedWorkerSids, retryWorkers } = await this.updateWorkers(
+      workerSids,
+      workerSkills
     );
+
+    let retryWorkerSids = retryWorkers.map((item) => item.sid);
+
+    // retry failed workers
+    var { updatedWorkerSids, retryWorkers } = await this.updateWorkers(
+      retryWorkerSids,
+      workerSkills
+    );
+
+    console.log("failed", retryWorkers);
+    const { workers, selectedWorkers } = this.state;
+    if (retryWorkers.length > 0) {
+      let failedWorkerSids = retryWorkers.map((item) => item.sid);
+
+      // get failed worker names
+      let failedWorkerNames = [];
+      failedWorkerSids.forEach((i) =>
+        failedWorkerNames.push(
+          workers[i].attributes?.full_name || workers[i].friendly_name
+        )
+      );
+
+      let errorMessage = `Error updating .. ${failedWorkerNames}`;
+
+      this.setState({
+        showMessage: null,
+        showUpdateErrors: errorMessage,
+        selectedWorkers: selectedWorkers.filter((sid) =>
+          failedWorkerSids.includes(sid)
+        ),
+      });
+    } else {
+      this.setState({ showMessage: "Saved" });
+      setTimeout(
+        () => this.setState({ showMessage: null, selectedWorkers: [] }),
+        2000
+      );
+    }
   };
 
   handleChange = (event) => {
     const { selectedWorkers } = this.state;
-
-    console.log(event.target);
-    console.log(selectedWorkers);
     this.setState({
       selectedWorkers: event.target.checked
         ? [...selectedWorkers, event.target.id]
         : selectedWorkers.filter((elem) => elem !== event.target.id),
       showMessage: null,
+      showUpdateErrors: null,
     });
   };
+
+  async updateWorkers(workerSids, workerSkills) {
+    let BULKSKILLS_BATCH_SIZE = process.env.BULKSKILLS_BATCH_SIZE || 5;
+    let updatedWorkerSids = [];
+    let retryWorkers = [];
+
+    console.log(BULKSKILLS_BATCH_SIZE);
+    for (let i = 0; i < workerSids.length; i += BULKSKILLS_BATCH_SIZE) {
+      this.setState({
+        showMessage: `Saving...${Math.min(
+          i + BULKSKILLS_BATCH_SIZE,
+          workerSids.length
+        )}  of ${workerSids.length}`,
+      });
+
+      let batchedWorkerSids = workerSids.slice(i, i + BULKSKILLS_BATCH_SIZE);
+      try {
+        var result = await Helpers.request("workers-bulk-skills-update", {
+          workerSids: JSON.stringify(batchedWorkerSids),
+          updatedAttributes: JSON.stringify(workerSkills),
+        });
+
+        let results = result.data;
+
+        results.forEach((result) => {
+          if (result.status === 200) {
+            updatedWorkerSids.push(result.worker_sid);
+          } else {
+            retryWorkers.push({
+              sid: result.worker_sid,
+              last_error: result.message,
+            });
+          }
+        });
+      } catch (error) {
+        console.error(
+          `error updating workersids ${batchedWorkerSids.toString()}`,
+          error
+        );
+      }
+    }
+    return { retryWorkers, updatedWorkerSids };
+  }
 
   render() {
     const { classes } = this.props;
@@ -202,6 +268,16 @@ class BulkWorkerSkills extends React.Component {
           >
             Apply
           </Button>
+        </div>
+
+        <div>
+          <div className="bulkButtonDescription">
+            {this.state.showUpdateErrors ? (
+              <span className="bold">{this.state.showUpdateErrors}</span>
+            ) : (
+              <div></div>
+            )}
+          </div>
         </div>
       </div>
     );

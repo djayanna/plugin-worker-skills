@@ -64,11 +64,13 @@ export default class Helpers {
     };
 
     const { FLEX_APP_FUNCTIONS_BASE } = process.env;
-    try {
-      const resp = await fetch(`${FLEX_APP_FUNCTIONS_BASE}/${path}`, options);
-      return await resp;
-    } catch (error) {
-      console.error("error fetch", error);
-    }
+      return await fetch(`${FLEX_APP_FUNCTIONS_BASE}/${path}`, options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        } else {
+          return response.json();
+        }
+      });
   };
 }
