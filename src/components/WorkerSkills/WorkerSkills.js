@@ -51,6 +51,8 @@ export default class WorkerSkills extends React.Component {
         nextProps.worker,
         nextProps.availableSkills
       );
+
+      nextProps.updateWorkerAttributes(nextProps.worker.attributes, false);
   
       return {
         workerSid: nextProps.worker.sid,
@@ -63,7 +65,7 @@ export default class WorkerSkills extends React.Component {
           }))
           .sort((a, b) => a.name.localeCompare(b.name)),
         notificationTemplate: undefined
-      };
+      }; 
  }
 
 
@@ -247,6 +249,7 @@ export default class WorkerSkills extends React.Component {
       workerSkills: state.workerSkillsOriginal,
       notificationTemplate: NotificationTemplate.Reverted
     }));
+    this.props.updateIsDirty(false);
   };
 
   handleChange = (event) => {
@@ -272,6 +275,8 @@ export default class WorkerSkills extends React.Component {
         [skill.name]: skill,
       },
     }));
+
+    this.props.updateIsDirty(true);
   };
 
   handleSkillRemove = (skill) => {
@@ -286,7 +291,6 @@ export default class WorkerSkills extends React.Component {
   };
 
   handleSaveClick = () => {
-
     const attributes = this.getMergedAttributes();
     const payload = {
       Sid: this.props.worker.sid,
@@ -321,6 +325,8 @@ export default class WorkerSkills extends React.Component {
           workerSkillsOriginal: state.workerSkills,
           notificationTemplate: NotificationTemplate.Saved
         }));
+
+        this.props.updateWorkerAttributes(this.props.worker.attributes, false);
       })
       .catch((error) => {
         // todo:

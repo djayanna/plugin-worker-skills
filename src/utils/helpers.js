@@ -1,3 +1,5 @@
+import * as Flex from "@twilio/flex-ui";
+
 export default class Helpers {
   static getWorkerSkills = (worker, availableSkills) => {
     const skills = {};
@@ -5,7 +7,9 @@ export default class Helpers {
     const parseSkills = (skillsAndLevel, disabled) => {
       if (Array.isArray(skillsAndLevel.skills)) {
         skillsAndLevel.skills.forEach((name) => {
-          const skillFromConfig = availableSkills.find((skill) => skill.name === name)
+          const skillFromConfig = availableSkills.find(
+            (skill) => skill.name === name
+          );
           skills[name] = {
             ...skillFromConfig,
             name,
@@ -41,5 +45,32 @@ export default class Helpers {
     }
 
     return skill.level >= skill.minimum && skill.level <= skill.maximum;
+  };
+
+  static request = async (path, params) => {
+    const body = {
+      ...params,
+      Token:
+        Flex.Manager.getInstance().store.getState().flex.session.ssoTokenPayload
+          .token,
+    };
+
+    const options = {
+      method: "POST",
+      body: new URLSearchParams(body),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+      },
+    };
+
+    const { FLEX_APP_FUNCTIONS_BASE } = process.env;
+      return await fetch(`${FLEX_APP_FUNCTIONS_BASE}/${path}`, options)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        } else {
+          return response.json();
+        }
+      });
   };
 }

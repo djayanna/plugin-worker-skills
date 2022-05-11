@@ -25,7 +25,51 @@ Finally, install the [Flex Plugin extension](https://github.com/twilio-labs/plug
 twilio plugins:install @twilio-labs/plugin-flex
 ```
 
-## Development
+## Serverless Functions
+
+
+### Deployment
+
+Create the Serverless config file by copying `.env.example` to `.env`.
+
+```bash
+cd serverless
+cp .env.example .env
+```
+Edit `.env` and set the `WORKSPACE_SID` variable to your Twilio TaskRouter Workspace Sid. Next, deploy the Serverless functions:
+
+```bash
+cd serverless
+twilio serverless:deploy
+```
+After successfully deploying your function, you should see at least the following:
+```bash
+✔ Serverless project successfully deployed
+
+Deployment Details
+Domain: worker-skills-xxxx-dev.twil.io
+
+Functions:
+   https://worker-skills-xxxx-dev.twil.io/workers-bulk-skills-update
+```
+
+Your functions will now be present in the Twilio Functions Console and be part of the "worker-functions" service. Copy the base URL from the function.
+
+## Flex Plugin
+
+### Development
+
+Create the plugin config file by copying `.env.example` to `.env`.
+
+```bash
+cd plugin-worker-skills
+cp .env.example .env
+```
+
+Edit `.env` and set the `FLEX_APP_FUNCTIONS_BASE` variable to your Twilio Functions base URL (like https://worker-skills-xxxx-dev.twil.io). 
 
 Run `twilio flex:plugins --help` to see all the commands we currently support. For further details on Flex Plugins refer to our documentation on the [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins/cli) page.
 
+<video width="320" height="240" controls>
+  <source src="/screen_captures/bulk-skills.mp4" type="video/mp4">
+</video>
