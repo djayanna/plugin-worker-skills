@@ -37,8 +37,6 @@ exports.handler = TokenValidator(async (context, event, callback) => {
 
         if (etag) {
           var ifMatch = new String(etag).toString().replace(/['"]+/g, "");
-
-          // if (workerSid === "WKadec2407e973e7483c3eec8abfee2081") { ifMatch += "1"};
           opts["ifMatch"] = ifMatch;
         }
 
