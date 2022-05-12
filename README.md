@@ -1,6 +1,8 @@
-# Your custom Twilio Flex Plugin
+# Twilio Flex Plugin - Worker Skills Management
 
 Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
+
+This plugin adds audit feature (user who last updated a worker skills) and bulk skills management functionality. Two new worker attributes `skillsUpdatedBy` and `skillsUpdatedTimestamp` are used track who last updated the worker skills. The bulk skills mamangement feature, allows a user a select a worker, and copy their skills to other workers in the same workspace.
 
 ## Setup
 
@@ -36,7 +38,7 @@ Create the Serverless config file by copying `.env.example` to `.env`.
 cd serverless
 cp .env.example .env
 ```
-Edit `.env` and set the `WORKSPACE_SID` variable to your Twilio TaskRouter Workspace Sid. Next, deploy the Serverless functions:
+Edit `.env` and set the `WORKSPACE_SID` (Twilio TaskRouter Workspace Sid),, `RETRY_COUNT` (number of times to retry when there is a conflict or error when updating worker attributes). Next, deploy the Serverless functions:
 
 ```bash
 cd serverless
@@ -66,7 +68,7 @@ cd plugin-worker-skills
 cp .env.example .env
 ```
 
-Edit `.env` and set the `FLEX_APP_FUNCTIONS_BASE` variable to your Twilio Functions base URL (like https://worker-skills-xxxx-dev.twil.io). 
+Edit `.env`, set the `FLEX_APP_FUNCTIONS_BASE` variable to your Twilio Functions base URL (like https://worker-skills-xxxx-dev.twil.io), `BULKSKILLS_BATCH_SIZE` to batch size for bulk worker skills update . 
 
 Run `twilio flex:plugins --help` to see all the commands we currently support. For further details on Flex Plugins refer to our documentation on the [Twilio Docs](https://www.twilio.com/docs/flex/developer/plugins/cli) page.
 
