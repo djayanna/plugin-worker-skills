@@ -9,9 +9,11 @@ This plugin replaces the native flex [WorkerSkills](https://www.twilio.com/docs/
 <img src="./screen_captures/bulk-skills.gif" width="250" />
 </p>
 
-If you only want to grant a selected number of users (with specific role e.g. admins) access/ability to edit worker skills, then you replace editable component with a Display only component.
+If you only want to grant a selected number of users (say users with specific roles e.g. admins) access/ability to edit worker skills, then you replace editable component with a Display only component.
 
-
+<p align="center">
+<img src="./screen_captures/displayskills.png" width="250" />
+</p>
 
 
 ## Setup
