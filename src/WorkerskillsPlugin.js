@@ -36,7 +36,7 @@ export default class WorkerskillsPlugin extends FlexPlugin {
   {
       const { roles } = manager.user;
       // by default, skills management are enabled for admin roles
-      return false// roles.indexOf("admin") == 0;
+      return roles.indexOf("admin") == 0;
   }
 
   /**
