@@ -31,10 +31,12 @@ export default class WorkerskillsPlugin extends FlexPlugin {
     }
   }
 
+  // Modify this function appropriately to show editable skills component. 
   showEditableWorkerSkills(manager)
   {
       const { roles } = manager.user;
-      return roles.indexOf("supervisor") >= 0 || roles.indexOf("admin") >= 0;
+      // by default, skills management are enabled for admin roles
+      return roles.indexOf("admin") >= 0;
   }
 
   /**
