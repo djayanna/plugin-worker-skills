@@ -2,7 +2,17 @@
 
 Twilio Flex Plugins allow you to customize the appearance and behavior of [Twilio Flex](https://www.twilio.com/flex). If you want to learn more about the capabilities and how to use the API, check out our [Flex documentation](https://www.twilio.com/docs/flex).
 
-This plugin adds audit feature (user who last updated a worker skills) and bulk skills management functionality. Two new worker attributes `skillsUpdatedBy` and `skillsUpdatedTimestamp` are used track who last updated the worker skills. The bulk skills mamangement feature, allows a user a select a worker, and copy their skills to other workers in the same workspace.
+This plugin replaces the native flex [WorkerSkills](https://www.twilio.com/docs/flex/developer/ui/components#workerskills) component, adds audit feature (user who last updated a worker skills) and bulk skills management functionality. Two new worker attributes `skillsUpdatedBy` and `skillsUpdatedTimestamp` are used track who last updated the worker skills. The bulk skills mamangement feature, allows a user a select a worker, and copy their skills to other workers in the same workspace.
+
+
+<p align="center">
+<img src="./screen_captures/bulk-skills.gif" width="250" />
+</p>
+
+If you only want to grant a selected number of users (with specific role e.g. admins) access/ability to edit worker skills, then you replace editable component with a Display only component.
+
+
+
 
 ## Setup
 
